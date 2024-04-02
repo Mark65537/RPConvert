@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RPConvert": {
+      "commandName": "Project",
+      "commandLineArgs": "lemming.png -o Png"
+    }
+  }
+}

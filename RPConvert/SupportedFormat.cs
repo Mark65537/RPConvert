@@ -3,15 +3,15 @@
 public enum SupportedFormat
 {
     [Description(".png")]
-    Png,
+    png,
     [Description(".bmp")]
-    Bmp,
+    bmp,
     [Description(".jpg")]
-    Jpg,
+    jpg,
     [Description(".jpeg")]
-    Jpeg,
+    jpeg,
     [Description(".gif")]
-    Gif,
+    gif,
     [Description(".*")]
-    Any
+    any
 }

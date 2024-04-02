@@ -16,10 +16,20 @@ namespace RIConvert
         [Option('q', "quiet", Required = false, HelpText = "Quiet mode.")]
         public bool Quiet { get; set; }
 
+        private string _out;
         [Option('o', "out", Required = false, HelpText = "Тип выходного файла")]
-        public SupportedFormat Out { get; set; }
+        public string Out
+        {
+            get { return _out; }
+            set { _out = value.ToLower(); }
+        }
 
-        [Value(1, MetaName = "output",  HelpText = "Путь к файлу, в который будет сохранен результат.")]
+        public SupportedFormat OutFormat
+        {
+            get { return Enum.Parse<SupportedFormat>(_out, true); }
+        }
+
+        [Value(1, Required = false, MetaName = "output",  HelpText = "Путь к файлу, в который будет сохранен результат.")]
         public string? OutputFilePath { get; set; }
     }
 }

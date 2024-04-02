@@ -544,17 +544,17 @@ namespace RIConvert
 
             switch (format)
             {
-                case SupportedFormat.Jpeg:
-                    outputBmp.Save(filename, ImageFormat.Jpeg);
+                case SupportedFormat.jpeg:
+                    outputBmp.Save($"{filename}.jpeg", ImageFormat.Jpeg);
                     break;
-                case SupportedFormat.Jpg:
-                    outputBmp.Save(filename, ImageFormat.Jpeg);
+                case SupportedFormat.jpg:
+                    outputBmp.Save($"{filename}.jpg", ImageFormat.Jpeg);
                     break;
-                case SupportedFormat.Png:
-                    outputBmp.Save(filename, ImageFormat.Png);
+                case SupportedFormat.png:
+                    outputBmp.Save($"{filename}.png", ImageFormat.Png);
                     break;
-                case SupportedFormat.Bmp:
-                    outputBmp.Save(filename, ImageFormat.Bmp);
+                case SupportedFormat.bmp:
+                    outputBmp.Save($"{filename}.bmp", ImageFormat.Bmp);
                     break;
                 default:
                     throw new Exception("Unsupported image format");

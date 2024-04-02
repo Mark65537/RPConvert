@@ -21,15 +21,15 @@ namespace RPConvert
             {
                 Bitmap InputBmp = new(opts.InputFilePath);
 
-                if(opts.Out == SupportedFormat.Png)
+                if(opts.OutFormat == SupportedFormat.png)
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        Palette.ExportImg(InputBmp, SupportedFormat.Png);                        
+                        Palette.ExportImg(InputBmp, SupportedFormat.png);                        
                     }
                     else
                     {
-                        Palette.ExportImg(InputBmp, SupportedFormat.Png, opts.OutputFilePath);
+                        Palette.ExportImg(InputBmp, SupportedFormat.png, opts.OutputFilePath);
                     }
                 }
             }
