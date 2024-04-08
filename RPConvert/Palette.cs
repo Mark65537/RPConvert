@@ -515,29 +515,30 @@ namespace RIConvert
             return bmp;
         }
 
-        internal static void ExportImg(Bitmap inputBmp, SupportedFormat format, string filename = "output")
+        public static void ExportImg(Bitmap inputBmp, SupportedFormat format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filename = "output")
         {
             HashSet<Color> palette = GetPalette(inputBmp);
-            int squareSize = 8;
-            int squaresPerRow = 8;
             int squaresCount = palette.Count;
             int rowsCount = (int)Math.Ceiling((double)squaresCount / squaresPerRow);
-            int bitmapWidth = squaresPerRow * squareSize;
-            int bitmapHeight = rowsCount * squareSize;
+            int borderWidth = 1;
+            int bitmapWidth = squaresPerRow * squareSize + (squaresPerRow * squareMerge) - squareMerge + borderWidth;
+            int bitmapHeight = rowsCount * squareSize + (rowsCount * squareMerge) - squareMerge + borderWidth;
 
             Bitmap outputBmp = new Bitmap(bitmapWidth, bitmapHeight);
             Graphics g = Graphics.FromImage(outputBmp);
             g.Clear(Color.White);
             int x = 0;
             int y = 0;
+            Pen borderPen = new Pen(Color.Black, borderWidth); // Pen for square borders
             foreach (Color color in palette)
             {
-                g.FillRectangle(new SolidBrush(color), x * squareSize, y * squareSize, squareSize, squareSize);
-                x++;
-                if (x >= squaresPerRow)
+                g.FillRectangle(new SolidBrush(color), x, y, squareSize, squareSize);
+                g.DrawRectangle(borderPen, x, y, squareSize, squareSize); // Draw square border
+                x += squareSize + squareMerge;
+                if (x >= bitmapWidth)
                 {
                     x = 0;
-                    y++;
+                    y += squareSize + squareMerge;
                 }
             }
             g.Dispose();

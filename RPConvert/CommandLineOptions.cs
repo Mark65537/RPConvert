@@ -29,6 +29,9 @@ namespace RIConvert
             get { return Enum.Parse<SupportedFormat>(_out, true); }
         }
 
+        [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]
+        public IEnumerable<int>? Sizes { get; set; }
+
         [Value(1, Required = false, MetaName = "output",  HelpText = "Путь к файлу, в который будет сохранен результат.")]
         public string? OutputFilePath { get; set; }
     }

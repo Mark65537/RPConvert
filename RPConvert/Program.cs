@@ -3,6 +3,7 @@ using RIConvert;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace RPConvert
 {
@@ -21,15 +22,20 @@ namespace RPConvert
             {
                 Bitmap InputBmp = new(opts.InputFilePath);
 
+                var sizes = opts.Sizes.ToList();
+                int squareSize = sizes.ElementAtOrDefault(0) != 0 ? sizes[0] : 8;
+                int squaresPerRow = sizes.ElementAtOrDefault(1) != 0 ? sizes[1] : 8;
+                int squaresMerge = sizes.ElementAtOrDefault(2) != 0 ? sizes[2] : 0;
+
                 if(opts.OutFormat == SupportedFormat.png)
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        Palette.ExportImg(InputBmp, SupportedFormat.png);                        
+                        Palette.ExportImg(InputBmp, opts.OutFormat, squareSize, squaresPerRow, squaresMerge);                        
                     }
                     else
                     {
-                        Palette.ExportImg(InputBmp, SupportedFormat.png, opts.OutputFilePath);
+                        Palette.ExportImg(InputBmp, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
             }
