@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-public enum SupportedFormat
+public enum BasicFormat
 {
     [Description(".png")]
     png,

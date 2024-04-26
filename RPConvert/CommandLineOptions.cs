@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RIConvert
+namespace RPConvert
 {
     internal class CommandLineOptions
     {
@@ -24,9 +24,9 @@ namespace RIConvert
             set { _out = value.ToLower(); }
         }
 
-        public SupportedFormat OutFormat
+        public BasicFormat OutFormat
         {
-            get { return Enum.Parse<SupportedFormat>(_out, true); }
+            get { return Enum.Parse<BasicFormat>(_out, true); }
         }
 
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]

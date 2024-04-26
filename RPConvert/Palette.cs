@@ -10,36 +10,11 @@ using System.Reflection.Emit;
 using System.Collections;
 //using ImageMagick;
 
-namespace RIConvert
+namespace RPConvert
 {
     public class Palette
     {
-        public static void ConvImgToSegaStr (Bitmap bmp, string savePath)
-        {
-            HashSet<Color> bmpPalette = GetPalette(bmp);
-
-            List<int> palette9bit = ConvertColorsTo9bit(bmpPalette);
-
-            List<string> hexPalette = palette9bit.Select(x => string.Format("${0:X3}", x)).ToList();
-
-            string hexPaletteString = string.Join(", ", hexPalette);
-        }
-
-        private static int ConvertColorTo9bit(Color color)
-        {
-            return ((color.B >> 5) << 9) |
-                        ((color.G >> 5) << 5) |
-                            ((color.R >> 5) << 1);
-        }
-        public static List<int> ConvertColorsTo9bit(HashSet<Color> palette)
-        {
-            List<int> palette9bit = new();
-            foreach (var color in palette)
-            {
-                palette9bit.Add(ConvertColorTo9bit(color));
-            }
-            return palette9bit;
-        }
+        
         public static Bitmap ConvertToXColors(Bitmap originalImage, int colorCount, HashSet<Color> customPal = null)
         {
 
@@ -541,7 +516,7 @@ namespace RIConvert
             return bmp;
         }
 
-        public static void ExportImg(Bitmap inputBmp, SupportedFormat format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filename = "output")
+        public static void ExportImg(Bitmap inputBmp, BasicFormat format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filename = "output")
         {
             HashSet<Color> palette = GetPalette(inputBmp);
             int squaresCount = palette.Count;
@@ -571,16 +546,16 @@ namespace RIConvert
 
             switch (format)
             {
-                case SupportedFormat.jpeg:
+                case BasicFormat.jpeg:
                     outputBmp.Save($"{filename}.jpeg", ImageFormat.Jpeg);
                     break;
-                case SupportedFormat.jpg:
+                case BasicFormat.jpg:
                     outputBmp.Save($"{filename}.jpg", ImageFormat.Jpeg);
                     break;
-                case SupportedFormat.png:
+                case BasicFormat.png:
                     outputBmp.Save($"{filename}.png", ImageFormat.Png);
                     break;
-                case SupportedFormat.bmp:
+                case BasicFormat.bmp:
                     outputBmp.Save($"{filename}.bmp", ImageFormat.Bmp);
                     break;
                 default:
