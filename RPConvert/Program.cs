@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using RPalConvert;
 using RPConvert;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace RPConvert
                 int squaresPerRow = sizes.ElementAtOrDefault(1) != 0 ? sizes[1] : 8;
                 int squaresMerge = sizes.ElementAtOrDefault(2) != 0 ? sizes[2] : 0;
 
-                if(Enum.IsDefined(typeof(BasicFormat), opts.OutFormat))
+                if(Enum.IsDefined(typeof(StandartFormat), opts.OutFormat))
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
@@ -38,7 +39,10 @@ namespace RPConvert
                         Palette.ExportImg(InputBmp, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
-                
+                else if (opts.OutFormat == AdvanceFormat.bex.ToString())
+                {
+                    _9bitPalette.GenerateBasiePaletteString(InputBmp, opts.InputFilePath);
+                }
             }
             catch (Exception e)
             {

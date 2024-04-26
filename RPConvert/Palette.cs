@@ -10,7 +10,7 @@ using System.Reflection.Emit;
 using System.Collections;
 //using ImageMagick;
 
-namespace RPConvert
+namespace RPalConvert
 {
     public class Palette
     {
@@ -516,7 +516,7 @@ namespace RPConvert
             return bmp;
         }
 
-        public static void ExportImg(Bitmap inputBmp, BasicFormat format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filename = "output")
+        public static void ExportImg(Bitmap inputBmp, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
         {
             HashSet<Color> palette = GetPalette(inputBmp);
             int squaresCount = palette.Count;
@@ -544,19 +544,20 @@ namespace RPConvert
             }
             g.Dispose();
 
-            switch (format)
+            StandartFormat formatEnum = (StandartFormat) Enum.Parse(typeof(StandartFormat), format, true);
+            switch (formatEnum)
             {
-                case BasicFormat.jpeg:
-                    outputBmp.Save($"{filename}.jpeg", ImageFormat.Jpeg);
+                case StandartFormat.jpeg:
+                    outputBmp.Save($"{filePath}.jpeg", ImageFormat.Jpeg);
                     break;
-                case BasicFormat.jpg:
-                    outputBmp.Save($"{filename}.jpg", ImageFormat.Jpeg);
+                case StandartFormat.jpg:
+                    outputBmp.Save($"{filePath}.jpg", ImageFormat.Jpeg);
                     break;
-                case BasicFormat.png:
-                    outputBmp.Save($"{filename}.png", ImageFormat.Png);
+                case StandartFormat.png:
+                    outputBmp.Save($"{filePath}.png", ImageFormat.Png);
                     break;
-                case BasicFormat.bmp:
-                    outputBmp.Save($"{filename}.bmp", ImageFormat.Bmp);
+                case StandartFormat.bmp:
+                    outputBmp.Save($"{filePath}.bmp", ImageFormat.Bmp);
                     break;
                 default:
                     throw new Exception("Unsupported image format");

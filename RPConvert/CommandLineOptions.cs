@@ -16,18 +16,32 @@ namespace RPConvert
         [Option('q', "quiet", Required = false, HelpText = "Quiet mode.")]
         public bool Quiet { get; set; }
 
-        private string _out;
+        private string _outFormat;
         [Option('o', "out", Required = false, HelpText = "Тип выходного файла")]
-        public string Out
+        public string OutFormat
         {
-            get { return _out; }
-            set { _out = value.ToLower(); }
+            get { return _outFormat; }
+            set 
+            { 
+                if (AllFormats.Contains(value.ToLower())) 
+                {
+                    _outFormat = value.ToLower(); 
+                }
+                else 
+                {
+                    throw new ArgumentException("Invalid format. Please choose a valid format.");
+                }
+            }
         }
 
-        public BasicFormat OutFormat
+        public List<string> AllFormats
         {
-            get { return Enum.Parse<BasicFormat>(_out, true); }
+            get 
+            { 
+                return [.. Enum.GetNames(typeof(StandartFormat)), .. Enum.GetNames(typeof(AdvanceFormat))]; 
+            }
         }
+
 
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]
         public IEnumerable<int>? Sizes { get; set; }

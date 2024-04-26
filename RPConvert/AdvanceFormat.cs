@@ -5,11 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPalConvert
+public enum AdvanceFormat
 {
-    public enum AdvanceFormat
-    {
-        [Description(".bex")]
-        bex,       
-    }
+    [Description(".bex")]
+    bex,       
 }
+
