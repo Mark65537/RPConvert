@@ -34,13 +34,8 @@ namespace RPConvert
             }
         }
 
-        public List<string> AllFormats
-        {
-            get 
-            { 
-                return [.. Enum.GetNames(typeof(StandartFormat)), .. Enum.GetNames(typeof(AdvanceFormat))]; 
-            }
-        }
+        private static List<string> AllFormats = [.. Enum.GetNames(typeof(StandartFormat)), .. Enum.GetNames(typeof(AdvanceFormat))]; 
+           
 
 
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]

@@ -1,4 +1,5 @@
 ﻿using RPConvert;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -17,14 +18,25 @@ namespace RPalConvert
         /// Generates a string for BEX palette format and writes it to a file.
         /// </summary>
         /// <param name="bmp">Bitmap image to extract palette from.</param>
-        /// <param name="filePath">Path of the file to write the palette string.</param>
-        public static void GenerateBasiePaletteString(Bitmap bmp, string filePath)
+        /// <param name="inFilePath">Path of the file to write the palette string.</param>
+        public static void ExportToBexFile(Bitmap bmp, string inFilePath, string outFilePath = "")
         {
+            string basiegaxorzString = GenerateBasiePaletteString(bmp, inFilePath);
+            outFilePath = string.IsNullOrEmpty(outFilePath) ? Path.ChangeExtension(inFilePath, ".bex") : outFilePath ;
+
+            File.WriteAllText(outFilePath, basiegaxorzString);
+        }
+
+        /// <summary>
+        /// Generate to BEX string palette format.
+        /// </summary>
+        /// <param name="bmp">Bitmap image to extract palette from.</param>
+        /// <param name="filePath">Path of the file to write the palette string.</param>
+        private static string GenerateBasiePaletteString(Bitmap bmp, string filePath)
+        {
+            string paletteString = GenerateHexPaletteString(bmp);
             string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-            string basiegaxorzString = $"{fileName}: dataint     {GenerateHexPaletteString(bmp)}";        
-
-            File.WriteAllText(Path.ChangeExtension(filePath, ".bex"), basiegaxorzString);            
+            return $"{fileName}_pal: dataint     {paletteString}";
         }
 
         /// <summary>
@@ -36,9 +48,14 @@ namespace RPalConvert
         {
             HashSet<Color> bmpPalette = Palette.GetPalette(bmp);
 
+            if (bmpPalette.Count > 16)
+            {
+                Console.WriteLine("Color palette has more than 16 colors");
+            }
+
             List<int> palette9bit = ConvertColorsTo9bit(bmpPalette);
 
-            List<string> hexPalette = palette9bit.Select(x => string.Format("${0:X3}", x)).ToList();
+            List<string> hexPalette = palette9bit.Select(x => $"${x:X3}").ToList();
 
             string hexPaletteString = string.Join(", ", hexPalette);
 
@@ -64,12 +81,7 @@ namespace RPalConvert
         /// <returns>List of 9 bit colors.</returns>
         public static List<int> ConvertColorsTo9bit(HashSet<Color> palette)
         {
-            List<int> palette9bit = new();
-            foreach (var color in palette)
-            {
-                palette9bit.Add(ConvertColorTo9bit(color));
-            }
-            return palette9bit;
+            return palette.Select(ConvertColorTo9bit).ToList();
         }
     }
 }

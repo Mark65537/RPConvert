@@ -2,7 +2,7 @@
   "profiles": {
     "RPConvert": {
       "commandName": "Project",
-      "commandLineArgs": " -o bex"
+      "commandLineArgs": "lemming.png -o bex"
     }
   }
 }

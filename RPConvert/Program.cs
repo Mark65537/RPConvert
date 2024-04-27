@@ -41,7 +41,14 @@ namespace RPConvert
                 }
                 else if (opts.OutFormat == AdvanceFormat.bex.ToString())
                 {
-                    _9bitPalette.GenerateBasiePaletteString(InputBmp, opts.InputFilePath);
+                    if (string.IsNullOrEmpty(opts.OutputFilePath))
+                    {
+                        _9bitPalette.ExportToBexFile(InputBmp, opts.InputFilePath);
+                    }
+                    else
+                    {
+                        _9bitPalette.ExportToBexFile(InputBmp, opts.InputFilePath, opts.OutputFilePath);
+                    }
                 }
             }
             catch (Exception e)
