@@ -4,6 +4,7 @@ using RPConvert;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace RPConvert
@@ -21,7 +22,30 @@ namespace RPConvert
         {
             try
             {
-                Bitmap InputBmp = new(opts.InputFilePath);
+                if (opts.PrintRGBto9bitSet)
+                {
+                    _9bitPalette.PrintRGBto9bitSet();
+                    return 0; // Завершить программу после вывода, так как другие опции не нужны
+                }
+
+                string? ext = Path.GetExtension(opts.InputFilePath);
+                Bitmap? InputBmp = null;
+                HashSet<Color> palette = null;
+
+                if (Enum.IsDefined(typeof(StandartFormat), ext))
+                {
+                    InputBmp = new(opts.InputFilePath);
+                    palette = Palette.GetPalette(opts.InputFilePath);
+                }
+                else if (ext == AdvanceFormat.BEX.ToString())
+                {
+                    palette = _9bitPalette.GetPaletteFromBex(opts.InputFilePath);
+                }
+                else
+                {
+                    Console.WriteLine( $"Unsupported file informat: {ext}");
+                    return -1;
+                }
 
                 var sizes = opts.Sizes.ToList();
                 int squareSize = sizes.ElementAtOrDefault(0) != 0 ? sizes[0] : 8;
@@ -32,23 +56,28 @@ namespace RPConvert
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        Palette.ExportImg(InputBmp, opts.OutFormat, squareSize, squaresPerRow, squaresMerge);                        
+                        Palette.ExportImg(palette, opts.OutFormat, squareSize, squaresPerRow, squaresMerge);                        
                     }
                     else
                     {
-                        Palette.ExportImg(InputBmp, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
+                        Palette.ExportImg(palette, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
-                else if (opts.OutFormat == AdvanceFormat.bex.ToString())
+                else if (opts.OutFormat == AdvanceFormat.BEX.ToString())
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        _9bitPalette.ExportToBexFile(InputBmp, opts.InputFilePath);
+                        _9bitPalette.ExportToBexFile(palette, opts.InputFilePath);
                     }
                     else
                     {
-                        _9bitPalette.ExportToBexFile(InputBmp, opts.InputFilePath, opts.OutputFilePath);
+                        _9bitPalette.ExportToBexFile(palette, opts.InputFilePath, opts.OutputFilePath);
                     }
+                }
+                else
+                {
+                    Console.WriteLine($"Unsupported file outformat: {ext}");
+                    return -1;
                 }
             }
             catch (Exception e)

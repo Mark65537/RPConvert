@@ -516,9 +516,8 @@ namespace RPalConvert
             return bmp;
         }
 
-        public static void ExportImg(Bitmap inputBmp, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
+        public static void ExportImg(HashSet<Color> palette, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
         {
-            HashSet<Color> palette = GetPalette(inputBmp);
             int squaresCount = palette.Count;
             int rowsCount = (int)Math.Ceiling((double)squaresCount / squaresPerRow);
             int borderWidth = 1;
@@ -562,6 +561,11 @@ namespace RPalConvert
                 default:
                     throw new Exception("Unsupported image format");
             }
+        }
+        public static void ExportImg(Bitmap inputBmp, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
+        {
+            HashSet<Color> palette = GetPalette(inputBmp);
+            ExportImg(palette, format, squareSize = 8, squaresPerRow = 8, squareMerge = 0, filePath = "output");
         }
 
     }

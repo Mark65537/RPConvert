@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 public enum AdvanceFormat
 {
     [Description(".bex")]
-    bex,       
+    BEX,       
 }
 

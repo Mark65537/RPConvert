@@ -34,14 +34,19 @@ namespace RPConvert
             }
         }
 
-        private static List<string> AllFormats = [.. Enum.GetNames(typeof(StandartFormat)), .. Enum.GetNames(typeof(AdvanceFormat))]; 
-           
-
+        private static List<string> AllFormats = Enum.GetNames(typeof(StandartFormat))
+                                                        .Concat(Enum.GetNames(typeof(AdvanceFormat)))
+                                                        .Select(name => name.ToLower())
+                                                        .ToList();
 
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]
         public IEnumerable<int>? Sizes { get; set; }
 
         [Value(1, Required = false, MetaName = "output",  HelpText = "Путь к файлу, в который будет сохранен результат.")]
         public string? OutputFilePath { get; set; }
+
+        [Option("PrintRGBto9bitSet", Required = false, HelpText = "", Hidden = true)]
+        public bool PrintRGBto9bitSet { get; set; }
+
     }
 }
