@@ -28,7 +28,7 @@ namespace RPConvert
                     return 0; // Завершить программу после вывода, так как другие опции не нужны
                 }
 
-                string? ext = Path.GetExtension(opts.InputFilePath);
+                string? ext = Path.GetExtension(opts.InputFilePath)?.ToLower().TrimStart('.');
                 Bitmap? InputBmp = null;
                 HashSet<Color> palette = null;
 
@@ -63,7 +63,7 @@ namespace RPConvert
                         Palette.ExportImg(palette, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
-                else if (opts.OutFormat == AdvanceFormat.BEX.ToString())
+                else if (opts.OutFormat.ToLower() == AdvanceFormat.BEX.ToString().ToLower())
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
