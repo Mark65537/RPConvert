@@ -5,7 +5,21 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration:
+          - Release
+          
     runs-on: windows-latest
+
+    env:
+      Solution_Name: RPConvert.sln
+      dot_net: net6.0
+      rid_x64: win-x64
+      rid_x86: win-x86
+      temp_folder: temp
+      app_name: RPConv
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -22,7 +36,22 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore
+      
+  release:
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - name: Create the app package
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle
+      env:
+          Appx_Bundle: Always
+          Appx_Bundle_Platforms: x86|x64
+          Appx_Package_Build_Mode: StoreUpload
+          Configuration: ${{ matrix.configuration }}
 
+    - name: Create archive
+      run: Compress-Archive -Path .\bin\Release\* -DestinationPath ${{env.rid_x64 }}.zip
+          
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
