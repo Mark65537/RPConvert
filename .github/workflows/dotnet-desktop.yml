@@ -26,10 +26,13 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup .NET
+    - name: Setup Dotnet
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '8.0' # replace with your .NET version
+        
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Restore dependencies
       run: dotnet restore
@@ -41,6 +44,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
+
     - name: Create the app package
       run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle
       env:
