@@ -44,6 +44,9 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
+    
+    - name: Add msbuild to PATH
+      run: echo "C:\Windows\Microsoft.NET\Framework64\v4.0.30319" >> $GITHUB_PATH
 
     - name: Create the app package
       run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle
