@@ -12,7 +12,7 @@ namespace RPalConvert
     /// <summary>
     /// Class to convert Bitmap RGB palette to 9 bit format.
     /// </summary>
-    internal class _9bitPalette
+    public class _9bitPalette
     {
         /// <summary>
         /// Imports a color palette from a BEX file and applies it to a Bitmap image.
@@ -33,9 +33,28 @@ namespace RPalConvert
 
         private static HashSet<Color> ParseBexPaletteString(string bexContent)
         {
-            var colorStrings = bexContent.Split(new[] { "dataint", ",", "$" }, StringSplitOptions.RemoveEmptyEntries);
-            return new HashSet<Color>(colorStrings.Select(hex => Convert9bitToColor(int.Parse(hex, System.Globalization.NumberStyles.HexNumber))));
+            // Разделяем строку по запятым
+            var parts = bexContent.Split(',');
+
+            // Создаём список для хранения шестнадцатеричных строк
+            List<string> hexValues = new List<string>();
+
+            foreach (var part in parts)
+            {
+                // Находим индекс символа $, который предшествует шестнадцатеричному значению
+                int dollarIndex = part.IndexOf('$');
+                if (dollarIndex != -1)
+                {
+                    // Извлекаем шестнадцатеричное значение после символа $
+                    string hexValue = part.Substring(dollarIndex + 1).Trim();
+                    hexValues.Add(hexValue);
+                }
+            }
+
+            // Преобразуем каждое шестнадцатеричное значение в цвет
+            return new HashSet<Color>(hexValues.Select(hex => Convert9bitToColor(int.Parse(hex, System.Globalization.NumberStyles.HexNumber))));
         }
+
 
 
         /// <summary>
