@@ -7,9 +7,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<ErrorReport>none</ErrorReport>
     <AssemblyName>RPConv</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  	<DebugType>none</DebugType>
+  	<Optimize>True</Optimize>
+  	<UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.3" />

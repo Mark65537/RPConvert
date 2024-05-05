@@ -1,116 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection.Emit;
-using System.Collections;
 //using ImageMagick;
 
 namespace RPalConvert
 {
     public class Palette
     {
-        
-        public static Bitmap ConvertToXColors(Bitmap originalImage, int colorCount, HashSet<Color> customPal = null)
-        {
-
-            if (colorCount < 2)
-            {
-                throw new ArgumentException("The colorCount parameter must be greater than or equal to 2.", nameof(colorCount));
-            }
-
-            HashSet<Color> palette;
-
-            if (customPal == null)
-            {
-                palette = GetPalette(originalImage);
-            }
-            else
-            {
-                palette = customPal;
-            }
-
-            if (palette.Count <= colorCount)
-            {
-                return originalImage;
-            }
-
-            List<Color> sortedPal = palette.ToList(); // Преобразуем HashSet в List
-            //sortedPal.Sort(); // Сортируем List
-
-            HashSet<Color> newPal = new();
-            newPal.UnionWith(sortedPal.Where(c => c == Color.White || c == Color.Black));
-
-            newPal.Add(FindMostFrequentColor(sortedPal));
-
-            int min = 0;
-            int max = palette.Count;
-            int mid = (max - min);
-
-            while (newPal.Count != colorCount)
-            {
-                mid /= 2;
-                for (int k = mid; k < max; k += mid)
-                {
-                    if (newPal.Count < colorCount)
-                    {
-                        newPal.Add(sortedPal[k]);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }          
-
-            return ApplyNewPaletteToImgFast(originalImage, newPal);
-        }
-
-        public static Bitmap ApplyNewPaletteToImg(Bitmap bmp, HashSet<Color> newPal)
-        {
-            for (int y = 0; y < bmp.Height; y++)
-            {
-                for (int x = 0; x < bmp.Width; x++)
-                {
-                    Color pixelColor = bmp.GetPixel(x, y);
-
-                    Color newColor = FindMostSimilarColor(newPal, pixelColor);
-
-                    bmp.SetPixel(x, y, newColor);
-                }
-            }
-            return bmp;
-        }
-
-        private static Bitmap ApplyNewPaletteToImgFast(Bitmap bmp, HashSet<Color> newPal)
-        {
-            BitmapData data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
-            unsafe
-            {
-                byte* ptr = (byte*)data.Scan0;
-                for (int y = 0; y < data.Height; y++)
-                {
-                    for (int x = 0; x < data.Width; x++)
-                    {
-                        Color pixelColor = Color.FromArgb(ptr[2], ptr[1], ptr[0]);
-                        Color newColor = FindMostSimilarColor(newPal, pixelColor);
-                        ptr[0] = newColor.B;
-                        ptr[1] = newColor.G;
-                        ptr[2] = newColor.R;
-
-                        ptr += 4;
-                    }
-                    ptr += data.Stride - data.Width * 4;
-                }
-            }
-            bmp.UnlockBits(data);
-            return bmp;
-        }
-
+        //TODO что делать с этой функцией
         private static Color GetMostFrequentColor(Bitmap bmp)
         {
             List<Color> colors = new List<Color>();
@@ -128,7 +27,7 @@ namespace RPalConvert
             return mostFrequentColor;
         }
 
-        private static Color FindMostFrequentColor(List<Color> colors)
+        public static Color FindMostFrequentColor(List<Color> colors)
         {
             Dictionary<Color, int> colorCounts = new Dictionary<Color, int>();
 
@@ -150,23 +49,34 @@ namespace RPalConvert
             return mostFrequentColor;
         }
 
+        public static Color FindClosestPaletteColor(Color color, HashSet<Color> palette)
+        {
+            int minDistanceSquared = int.MaxValue;
+            Color closestColor = Color.Empty;
 
+            foreach (Color paletteColor in palette)
+            {
+                int Rdiff = color.R - paletteColor.R;
+                int Gdiff = color.G - paletteColor.G;
+                int Bdiff = color.B - paletteColor.B;
+                int distanceSquared = Rdiff * Rdiff + Gdiff * Gdiff + Bdiff * Bdiff;
+
+                if (distanceSquared < minDistanceSquared)
+                {
+                    minDistanceSquared = distanceSquared;
+                    closestColor = paletteColor;
+                }
+            }
+
+            return closestColor;
+        }
 
         private static Color GetMostFrequentColor(string filePath)
         {
             return GetMostFrequentColor(new Bitmap(filePath));
         }
 
-        public static Bitmap ConvTo16Color(Bitmap originalImage)
-        {
-            return ConvertToXColors(originalImage, 16);
-        }
-        public static Bitmap ConvTo4Color(Bitmap originalImage)
-        {
-            return ConvertToXColors(originalImage, 4);
-        }
-
-        private static Color FindMostSimilarColor(HashSet<Color> colors, Color pixelColor)
+        public static Color FindMostSimilarColor(HashSet<Color> colors, Color pixelColor)
         {
             if (colors.Contains(pixelColor))
             {
@@ -295,30 +205,7 @@ namespace RPalConvert
             return result;
         }
 
-        //public static Bitmap ConvertToXColorsIM(Bitmap bmp, int targetColorsCount, int maxColorCount)
-        //{
-        //    Bitmap tempBmp = null;
-        //    HashSet<Color> palette = new();
-        //    for (int i = targetColorsCount; i <= maxColorCount; i++)
-        //    {
-        //        tempBmp = ConvertToXColorsIM(bmp, i);
-        //        //palette = GetPalette(tempBmp, colorsCount);
-        //        palette = GetPalette(tempBmp);
-        //        if (palette.Count > targetColorsCount)
-        //        {
-        //            palette = GetPaletteStright(tempBmp);
-        //            if (palette.Count > targetColorsCount)
-        //            {
-        //                break;
-        //            }
-        //        }
-        //        if (palette.Count == targetColorsCount)
-        //        {
-        //            break;
-        //        }
-        //    }
-        //    return tempBmp ?? bmp;
-        //}
+        
 
         private static Color ConvertTo4ColorWithGrayscale(Color color)
         {
@@ -355,13 +242,13 @@ namespace RPalConvert
         }
         public static HashSet<Color> GetPalette(Bitmap bmp, int convColorsCount = -1)
         {
-            HashSet<Color> colors = GetPaletteFast(bmp);
+            HashSet<Color> palette = GetPaletteFast(bmp);
             // Получить палитру цветов из изображения
-            if (colors.Count == 0 && (convColorsCount == -1 || colors.Count != convColorsCount))
+            if (palette.Count == 0 && (convColorsCount == -1 || palette.Count != convColorsCount))
             {
-                colors = GetPaletteStright(bmp);
+                palette = GetPaletteStright(bmp);
             }
-            return colors;
+            return palette;
         }
 
         public static HashSet<Color> GetPaletteStright(Bitmap image)
@@ -422,32 +309,34 @@ namespace RPalConvert
                 throw new Exception("в изображении больше чем 16 цветов");
             }
         }
-        public static bool Has16Colors(Bitmap image)
+        public static bool Has16Colors(Bitmap bitmap)
         {
             // Create a HashSet to store the unique colors
-            HashSet<Color> uniqueColors = GetPalette(image);
-
-            if (uniqueColors.Count > 16)
-            {
-                return false;
-            }
+            HashSet<Color> uniqueColors = GetPalette(bitmap);
 
             // Return true if the HashSet contains exactly 16 colors
             return uniqueColors.Count <= 16;
         }
+
+
         public static Bitmap MakeTransperentColor(Image img, Color color)
         {
             return MakeTransperentColor(new Bitmap(img), color);
         }
+
         public static Bitmap MakeTransperentColor(Bitmap bmp, Color color)
         {
             bmp.MakeTransparent(color);
             return bmp;
         }
+
+
         public static Bitmap ChangeColor(Image bmp, Color prevColor, Color newColor)
         {
             return ChangeColor(new Bitmap(bmp), prevColor, newColor);
         }
+
+        //TODO удалить данную функцию так как она изменяет исходное изображение
         public static Bitmap ChangeColor(Bitmap bmp, Color prevColor, Color newColor)
         {
             for (int y = 0; y < bmp.Height; y++)            
@@ -485,38 +374,7 @@ namespace RPalConvert
         //    }
         //}
 
-        public static Bitmap SetCustomPal(Bitmap bmp, HashSet<Color> oldPal, HashSet<Color> newPal)
-        {
-            //Bitmap newBmp = new Bitmap(bmp.Width, bmp.Height, bmp.PixelFormat);
-            Dictionary<Color, Color> newColors = new();
-
-            if (oldPal.Count != newPal.Count)
-            {
-                throw new ArgumentException("Both hashsets should have the same count.");
-            }
-
-            using (var enumerator1 = oldPal.GetEnumerator())
-            using (var enumerator2 = newPal.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
-                {
-                    newColors.Add(enumerator1.Current, enumerator2.Current);
-                }
-            }
-
-            for (int y = 0; y < bmp.Height; y++)
-            {
-                for (int x = 0; x < bmp.Width; x++)
-                {
-                    Color color = bmp.GetPixel(x, y);
-                    bmp.SetPixel(x, y, newColors[color]);
-                }
-            }
-
-            return bmp;
-        }
-
-        public static void ExportImg(HashSet<Color> palette, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
+        internal static void ExportImg(HashSet<Color> palette, ImageFormat imgFormat, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
         {
             int squaresCount = palette.Count;
             int rowsCount = (int)Math.Ceiling((double)squaresCount / squaresPerRow);
@@ -543,29 +401,12 @@ namespace RPalConvert
             }
             g.Dispose();
 
-            StandartFormat formatEnum = (StandartFormat) Enum.Parse(typeof(StandartFormat), format, true);
-            switch (formatEnum)
-            {
-                case StandartFormat.jpeg:
-                    outputBmp.Save($"{filePath}.jpeg", ImageFormat.Jpeg);
-                    break;
-                case StandartFormat.jpg:
-                    outputBmp.Save($"{filePath}.jpg", ImageFormat.Jpeg);
-                    break;
-                case StandartFormat.png:
-                    outputBmp.Save($"{filePath}.png", ImageFormat.Png);
-                    break;
-                case StandartFormat.bmp:
-                    outputBmp.Save($"{filePath}.bmp", ImageFormat.Bmp);
-                    break;
-                default:
-                    throw new Exception("Unsupported image format");
-            }
+            outputBmp.Save($"{filePath}.{imgFormat}", imgFormat);            
         }
-        public static void ExportImg(Bitmap inputBmp, string format, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
+        internal static void ExportImg(Bitmap inputBmp, ImageFormat imgFormat, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
         {
             HashSet<Color> palette = GetPalette(inputBmp);
-            ExportImg(palette, format, squareSize = 8, squaresPerRow = 8, squareMerge = 0, filePath = "output");
+            ExportImg(palette, imgFormat, squareSize, squaresPerRow, squareMerge, filePath);
         }
 
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing.Imaging;
 
 namespace RPConvert
 {
@@ -34,7 +35,7 @@ namespace RPConvert
             }
         }
 
-        private static List<string> AllFormats = Enum.GetNames(typeof(StandartFormat))
+        private static List<string> AllFormats = Enum.GetNames(typeof(ImageFormat))
                                                         .Concat(Enum.GetNames(typeof(AdvanceFormat)))
                                                         .Select(name => name.ToLower())
                                                         .ToList();

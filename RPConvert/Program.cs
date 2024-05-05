@@ -1,11 +1,12 @@
 ﻿using CommandLine;
 using RPalConvert;
-using RPConvert;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Xml;
 
 namespace RPConvert
 {
@@ -28,22 +29,32 @@ namespace RPConvert
                     return 0; // Завершить программу после вывода, так как другие опции не нужны
                 }
 
-                string? ext = Path.GetExtension(opts.InputFilePath)?.ToLower().TrimStart('.');
+                string? inFormat = Path.GetExtension(opts.InputFilePath)?.ToLower().TrimStart('.');
                 Bitmap? InputBmp = null;
                 HashSet<Color> palette = null;
+                Dictionary<string, ImageFormat> formatMap = new Dictionary<string, ImageFormat>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "bmp", ImageFormat.Bmp },
+                    { "jpg", ImageFormat.Jpeg },
+                    { "jpeg", ImageFormat.Jpeg },
+                    { "gif", ImageFormat.Gif },
+                    { "png", ImageFormat.Png },
+                    { "tiff", ImageFormat.Tiff }
+                };
 
-                if (Enum.IsDefined(typeof(StandartFormat), ext))
+
+                if (Enum.IsDefined(typeof(ImageFormat), inFormat))
                 {
                     InputBmp = new(opts.InputFilePath);
                     palette = Palette.GetPalette(opts.InputFilePath);
                 }
-                else if (ext == AdvanceFormat.BEX.ToString())
+                else if (inFormat == AdvanceFormat.BEX.ToString())
                 {
                     palette = _9bitPalette.GetPaletteFromBex(opts.InputFilePath);
                 }
                 else
                 {
-                    Console.WriteLine( $"Unsupported file informat: {ext}");
+                    Console.WriteLine( $"Unsupported file informat: {inFormat}");
                     return -1;
                 }
 
@@ -52,15 +63,20 @@ namespace RPConvert
                 int squaresPerRow = sizes.ElementAtOrDefault(1) != 0 ? sizes[1] : 8;
                 int squaresMerge = sizes.ElementAtOrDefault(2) != 0 ? sizes[2] : 0;
 
-                if(Enum.IsDefined(typeof(StandartFormat), opts.OutFormat))
+                if(Enum.IsDefined(typeof(ImageFormat), opts.OutFormat))
                 {
+                    if (!formatMap.TryGetValue(opts.OutFormat, out ImageFormat format))
+                    {
+                        throw new NotSupportedException("Unsupported image format: " + opts.OutFormat);
+                    }
+
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        Palette.ExportImg(palette, opts.OutFormat, squareSize, squaresPerRow, squaresMerge);                        
+                        Palette.ExportImg(palette, format, squareSize, squaresPerRow, squaresMerge);                        
                     }
                     else
                     {
-                        Palette.ExportImg(palette, opts.OutFormat, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
+                        Palette.ExportImg(palette, format, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
                 else if (opts.OutFormat.ToLower() == AdvanceFormat.BEX.ToString().ToLower())
@@ -76,7 +92,7 @@ namespace RPConvert
                 }
                 else
                 {
-                    Console.WriteLine($"Unsupported file outformat: {ext}");
+                    Console.WriteLine($"Unsupported file outformat: {inFormat}");
                     return -1;
                 }
             }
