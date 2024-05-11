@@ -54,7 +54,24 @@ namespace RPalConvert
             return new HashSet<Color>(hexValues.Select(hex => Convert9bitToColor(int.Parse(hex, System.Globalization.NumberStyles.HexNumber))));
         }
 
+        public static void ExportToBin(Bitmap bmp, string outFilePath)
+        {
+            var palette = Palette.GetPalette(bmp);
+            List<int> colors = ConvertColorsTo9bit(palette);
 
+            using (BinaryWriter writer = new BinaryWriter(File.Open(outFilePath, FileMode.Create)))
+            {
+                foreach (var color in colors)
+                {
+                    byte firstByte = (byte)(color >> 8);
+                    byte sacondByte = (byte)color;                    
+
+                    // Записываем два байта в файл
+                    writer.Write(firstByte);  // Пишем старший байт
+                    writer.Write(sacondByte);   // Пишем младший байт
+                }
+            }
+        }
 
         /// <summary>
         /// Generates a string for BEX palette format and writes it to a file.

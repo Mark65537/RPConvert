@@ -374,7 +374,7 @@ namespace RPalConvert
         //    }
         //}
 
-        internal static void ExportImg(HashSet<Color> palette, ImageFormat imgFormat, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
+        public static void ExportImg(HashSet<Color> palette, ImageFormat imgFormat, int squareSize = 8, int squaresPerRow = 8, int squareMerge = 0, string filePath = "output")
         {
             int squaresCount = palette.Count;
             int rowsCount = (int)Math.Ceiling((double)squaresCount / squaresPerRow);
