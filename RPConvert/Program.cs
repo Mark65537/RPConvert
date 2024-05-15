@@ -87,7 +87,7 @@ namespace RPConvert
                     }
                     else
                     {
-                        _9bitPalette.ExportToBexFile(palette, opts.InputFilePath, opts.OutputFilePath);
+                        _9bitPalette.ExportToBexFile(palette, opts.OutputFilePath);
                     }
                 }
                 else

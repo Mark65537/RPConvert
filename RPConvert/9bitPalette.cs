@@ -64,7 +64,7 @@ namespace RPalConvert
                 foreach (var color in colors)
                 {
                     byte firstByte = (byte)(color >> 8);
-                    byte sacondByte = (byte)color;                    
+                    byte sacondByte = (byte)color;
 
                     // Записываем два байта в файл
                     writer.Write(firstByte);  // Пишем старший байт
@@ -79,19 +79,19 @@ namespace RPalConvert
         /// <param name="bmp">The Bitmap image from which to extract the color palette.</param>
         /// <param name="inFilePath">The file path of the input image.</param>
         /// <param name="outFilePath">The optional file path for the output BEX file. If not provided, the BEX file is created in the same directory as the input file with the same name and a .bex extension.</param>
-        public static void ExportToBexFile(Bitmap bmp, string inFilePath, string outFilePath = "")
+        internal static void ExportToBexFile(Bitmap bmp, string outFilePath)
         {
             HashSet<Color> palette = Palette.GetPalette(bmp);
 
-            ExportToBexFile(palette, inFilePath, outFilePath);
+            ExportToBexFile(palette, outFilePath);
         }
 
-        public static void ExportToBexFile(HashSet<Color> palette, string inFilePath, string outFilePath = "")
+        public static void ExportToBexFile(HashSet<Color> palette, string outFilePath)
         {
-            string basiegaxorzString = GenerateBasiePaletteString(palette, inFilePath);
-            outFilePath = string.IsNullOrEmpty(outFilePath) ? Path.ChangeExtension(inFilePath, ".bex") : outFilePath;
+            string bexPalStr = GenerateBasiePaletteString(palette, outFilePath);
+            outFilePath = Path.ChangeExtension(outFilePath, "_pal.bex");
 
-            File.WriteAllText(outFilePath, basiegaxorzString);
+            File.WriteAllText(outFilePath, bexPalStr);
         }
 
         /// <summary>
@@ -99,10 +99,10 @@ namespace RPalConvert
         /// </summary>
         /// <param name="bmp">Bitmap image to extract palette from.</param>
         /// <param name="filePath">Path of the file to write the palette string.</param>
-        private static string GenerateBasiePaletteString(HashSet<Color> palette, string filePath)
+        public static string GenerateBasiePaletteString(HashSet<Color> palette, string filePath)
         {
             string paletteString = GenerateHexPaletteString(palette);
-            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string fileName = Path.GetFileNameWithoutExtension(filePath).Replace(" ", "_");
             return $"{fileName}_pal: dataint     {paletteString}";
         }
 
@@ -178,11 +178,11 @@ namespace RPalConvert
         /// </summary>
         public static void PrintRGBto9bitSet()
         {
-            for (int r = 0; r < 256; r +=32) // Increment by 32 to simulate 3 bits for red.
+            for (int r = 0; r < 256; r += 32) // Increment by 32 to simulate 3 bits for red.
             {
-                for (int g = 0; g < 256; g +=32) // Increment by 32 to simulate 3 bits for green.
+                for (int g = 0; g < 256; g += 32) // Increment by 32 to simulate 3 bits for green.
                 {
-                    for (int b = 0; b < 256; b +=32) // Increment by 32 to simulate 3 bits for blue.
+                    for (int b = 0; b < 256; b += 32) // Increment by 32 to simulate 3 bits for blue.
                     {
                         Color color = Color.FromArgb(r, g, b);
                         int color9bit = ConvertColorTo9bit(color);
