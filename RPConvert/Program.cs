@@ -1,5 +1,6 @@
 ﻿using CommandLine;
-using RPalConvert;
+using Palettes;
+using RetroLib.General;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
