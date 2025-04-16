@@ -1,11 +1,8 @@
-﻿using CommandLine.Text;
-using CommandLine;
+﻿using CommandLine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace RPConvert
 {
@@ -22,28 +19,27 @@ namespace RPConvert
         public string OutFormat
         {
             get { return _outFormat; }
-            set 
-            { 
-                if (AllFormats.Contains(value.ToLower())) 
+            set
+            {
+                if (AllFormats.Contains(value.ToLower()))
                 {
-                    _outFormat = value.ToLower(); 
+                    _outFormat = value.ToLower();
                 }
-                else 
+                else
                 {
                     throw new ArgumentException("Invalid format. Please choose a valid format.");
                 }
             }
         }
 
-        private static List<string> AllFormats = Enum.GetNames(typeof(ImageFormat))
+        private static List<string> AllFormats = [.. Enum.GetNames(typeof(ImageFormat))
                                                         .Concat(Enum.GetNames(typeof(AdvanceFormat)))
-                                                        .Select(name => name.ToLower())
-                                                        .ToList();
+                                                        .Select(name => name.ToLower())];
 
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]
         public IEnumerable<int>? Sizes { get; set; }
 
-        [Value(1, Required = false, MetaName = "output",  HelpText = "Путь к файлу, в который будет сохранен результат.")]
+        [Value(1, Required = false, MetaName = "output", HelpText = "Путь к файлу, в который будет сохранен результат.")]
         public string? OutputFilePath { get; set; }
 
         [Option("PrintRGBto9bitSet", Required = false, HelpText = "", Hidden = true)]

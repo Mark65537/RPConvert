@@ -2,7 +2,7 @@
   "profiles": {
     "RPConvert": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\programs\\0) Visual Studio my\\RIConverter\\RetConv\\bin\\Release\\us_fear_pioneer far.bmp\" -o bex"
+      "commandLineArgs": "--PrintRGBto9bitSet"
     }
   }
 }

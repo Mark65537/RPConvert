@@ -1,6 +1,6 @@
 ﻿using CommandLine;
-using Palettes;
 using RetroLib.General;
+using RetroLib.Palettes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
