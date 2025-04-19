@@ -2,7 +2,7 @@
   "profiles": {
     "RPConvert": {
       "commandName": "Project",
-      "commandLineArgs": "--PrintRGBto9bitSet"
+      "commandLineArgs": "\"title.png\" -p 9bit"
     }
   }
 }

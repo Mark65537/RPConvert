@@ -29,10 +29,13 @@ namespace RPConvert
                     return 0; // Завершить программу после вывода, так как другие опции не нужны
                 }
 
+
+
                 string? inFormat = Path.GetExtension(opts.InputFilePath)?.ToLower().TrimStart('.');
+                string? outFormat = opts.OutFormat ?? Path.GetExtension(opts.InputFilePath)?.ToLower().TrimStart('.');
                 Bitmap? InputBmp = null;
                 HashSet<Color> palette = null;
-                Dictionary<string, ImageFormat> formatMap = new Dictionary<string, ImageFormat>(StringComparer.OrdinalIgnoreCase)
+                Dictionary<string, ImageFormat> formatMap = new(StringComparer.OrdinalIgnoreCase)
                 {
                     { "bmp", ImageFormat.Bmp },
                     { "jpg", ImageFormat.Jpeg },
@@ -42,6 +45,18 @@ namespace RPConvert
                     { "tiff", ImageFormat.Tiff }
                 };
 
+                //FIXME: 
+                if (opts.Palettes == "9bit")
+                {
+                    _9bitPalette.ConvertBmp(opts.InputFilePath, 31);
+                    palette = Palette.GetPalette(Path.GetFileNameWithoutExtension(opts.InputFilePath) + $"_9bit_31.png");
+                    HashSet<ushort> newPalette = [];
+                    foreach (var color in palette)
+                    {
+                        newPalette.Add(_9bitPalette.ConvertColorTo9bit(color));
+                    }
+                    return 0;
+                }
 
                 if (Enum.IsDefined(typeof(ImageFormat), inFormat))
                 {
@@ -54,7 +69,7 @@ namespace RPConvert
                 }
                 else
                 {
-                    Console.WriteLine( $"Unsupported file informat: {inFormat}");
+                    Console.WriteLine($"Unsupported file informat: {inFormat}");
                     return -1;
                 }
 
@@ -63,23 +78,25 @@ namespace RPConvert
                 int squaresPerRow = sizes.ElementAtOrDefault(1) != 0 ? sizes[1] : 8;
                 int squaresMerge = sizes.ElementAtOrDefault(2) != 0 ? sizes[2] : 0;
 
-                if(Enum.IsDefined(typeof(ImageFormat), opts.OutFormat))
+
+
+                if (Enum.IsDefined(typeof(ImageFormat), outFormat))
                 {
-                    if (!formatMap.TryGetValue(opts.OutFormat, out ImageFormat format))
+                    if (!formatMap.TryGetValue(outFormat, out ImageFormat format))
                     {
-                        throw new NotSupportedException("Unsupported image format: " + opts.OutFormat);
+                        throw new NotSupportedException("Unsupported image format: " + outFormat);
                     }
 
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {
-                        Palette.ExportImg(palette, format, squareSize, squaresPerRow, squaresMerge);                        
+                        Palette.ExportImg(palette, format, squareSize, squaresPerRow, squaresMerge);
                     }
                     else
                     {
                         Palette.ExportImg(palette, format, squareSize, squaresPerRow, squaresMerge, opts.OutputFilePath);
                     }
                 }
-                else if (opts.OutFormat.ToLower() == AdvanceFormat.BEX.ToString().ToLower())
+                else if (outFormat.Equals(AdvanceFormat.BEX.ToString(), StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (string.IsNullOrEmpty(opts.OutputFilePath))
                     {

@@ -39,6 +39,9 @@ namespace RPConvert
         [Option('s', "sizes", Required = false, HelpText = "Sizes for the image squares.", Separator = ',')]
         public IEnumerable<int>? Sizes { get; set; }
 
+        [Option('p', "palette", Required = false, HelpText = "preset palette", Separator = ',')]
+        public string? Palettes { get; set; }
+
         [Value(1, Required = false, MetaName = "output", HelpText = "Путь к файлу, в который будет сохранен результат.")]
         public string? OutputFilePath { get; set; }
 
